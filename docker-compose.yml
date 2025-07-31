@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ubuntu-nextjs:
+    image: ubuntu:latest
+    container_name: ubuntu-nextjs-container
+    volumes:
+      - ./:/app
+    ports:
+      - "3001:3000"
+    working_dir: /app
+    tty: true
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y curl gnupg &&
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&
+        apt-get install -y nodejs &&
+        npm install -g npm &&
+        bash
+      "

@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+enum PriceType {
+  FREE
+  PRO
+  TEAM
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+}
+
+model Users {
+  id               String          @id @default(uuid())
+  name             String
+  email            String          @unique
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  stripeCustomerId String? // Store Stripe Customer ID
+  drafts           Drafts[]
+  folders          Folders[]
+  subscriptions    Subscriptions[]
+  Usage            Usage[]
+  Emails           Emails[]
+}
+
+model Folders {
+  id                    String   @id @default(uuid())
+  title                 String
+  description           String
+  userId                String   @map("user_id")
+  color                 String
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  drafts                Drafts[]
+  user                  Users    @relation(fields: [userId], references: [id])
+  isUncategorizedFolder Boolean  @default(false)
+}
+
+model Drafts {
+  id          String        @id @default(uuid())
+  userId      String        @map("user_id")
+  folderId    String        @map("folder_id")
+  title       String
+  content     String
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  folder      Folders       @relation(fields: [folderId], references: [id])
+  user        Users         @relation(fields: [userId], references: [id])
+  suggestions Suggestions[]
+}
+
+model Suggestions {
+  id         String   @id @default(uuid())
+  draftId    String   @map("draft_id")
+  suggestion String
+  applied    Boolean
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  draft      Drafts   @relation(fields: [draftId], references: [id])
+}
+
+model Subscriptions {
+  id                       String   @id @default(uuid())
+  userId                   String
+  user                     Users    @relation(fields: [userId], references: [id])
+  stripeSubscriptionId     String
+  stripeSubscriptionItemId String
+  priceId                  String   @map("price_id")
+  status                   String
+  currentPeriodStart       DateTime
+  currentPeriodEnd         DateTime
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+  price                    Prices   @relation(fields: [priceId], references: [id])
+}
+
+model Prices {
+  id            String          @id @default(uuid())
+  stripePriceId String?         @unique
+  name          String
+  description   String
+  features      String[]
+  planType      PriceType
+  billingCycle  BillingCycle
+  popular       Boolean         @default(false)
+  price         Decimal
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  Subscriptions Subscriptions[]
+  order         Int             @default(1)
+
+  @@unique([planType, billingCycle])
+}
+
+model Usage {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            Users     @relation(fields: [userId], references: [id])
+  requestCount    Int       @default(0)
+  creditStartDate DateTime?
+  creditEndDate   DateTime?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+}
+
+model Emails {
+  id        String      @id @default(uuid())
+  userId    String      @unique
+  user      Users       @relation(fields: [userId], references: [id])
+  email     String
+  status    EmailStatus @default(PENDING)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+}

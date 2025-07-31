@@ -1,0 +1,36 @@
+<communication>
+  1. Respond in English.
+</communication>
+
+<project>
+  1. The project uses Next.js with the App Router.
+  2. Tailwind CSS is used for styling.
+  3. shadcn is integrated for UI components.
+</project>
+
+<file_management>
+  1. The Next.js configuration file is `next.config.mjs`.
+  2. The Tailwind CSS configuration file is `tailwind.config.ts`.
+  3. The PostCSS configuration file is `postcss.config.mjs`.
+  4. Avoid modifying files in the `app/config` directory.
+</file_management>
+
+<coding_standards>
+  1. Follow Next.js best practices for file and folder structures.
+  2. Use TypeScript for all JavaScript and configuration files.
+  3. Ensure Tailwind CSS classes adhere to the project's design system.
+  4. Utilize shadcn components as per the project's UI requirements.
+</coding_standards>
+
+<api_usage>
+  1. Avoid using APIs that require authorization without proper credentials.
+</api_usage>
+
+<build_system>
+  1. Use the Next.js build system for project builds.
+</build_system>
+
+<preferences>
+  1. Use ESLint and Prettier for code linting and formatting.
+  2. Ensure compatibility with the latest stable versions of Node.js.
+</preferences>
